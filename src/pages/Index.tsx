@@ -27,6 +27,25 @@ const Index = () => {
   const [margins, setMargins] = useState([20]);
   const [text, setText] = useState("");
   const [pageFormat, setPageFormat] = useState("A4");
+  const [customWidth, setCustomWidth] = useState(210);
+  const [customHeight, setCustomHeight] = useState(297);
+
+  const getPageDimensions = () => {
+    switch (pageFormat) {
+      case "A4":
+        return { width: 210, height: 297 };
+      case "A5":
+        return { width: 148, height: 210 };
+      case "Letter":
+        return { width: 216, height: 279 };
+      case "Custom":
+        return { width: customWidth, height: customHeight };
+      default:
+        return { width: 210, height: 297 };
+    }
+  };
+
+  const pageDimensions = getPageDimensions();
 
   const sampleText = `Лорем ипсум долор сит амет, консететур адиписцинг элит, сед до еиусмод темпор инцидидунт ут лаборе ет долоре магна аликуа. Ут еним ад миним вениам, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -160,6 +179,44 @@ const Index = () => {
                   </Select>
                 </div>
 
+                {pageFormat === "Custom" && (
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="custom-width">Ширина (мм)</Label>
+                        <Input
+                          id="custom-width"
+                          type="number"
+                          value={customWidth}
+                          onChange={(e) =>
+                            setCustomWidth(Number(e.target.value))
+                          }
+                          min="50"
+                          max="500"
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="custom-height">Высота (мм)</Label>
+                        <Input
+                          id="custom-height"
+                          type="number"
+                          value={customHeight}
+                          onChange={(e) =>
+                            setCustomHeight(Number(e.target.value))
+                          }
+                          min="50"
+                          max="500"
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Текущий размер: {customWidth}×{customHeight} мм
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="font-family">Шрифт</Label>
                   <Select>
@@ -247,7 +304,8 @@ const Index = () => {
                   Предварительный просмотр
                 </CardTitle>
                 <CardDescription>
-                  Так будут выглядеть ваши страницы при печати
+                  Так будут выглядеть ваши страницы при печати (
+                  {pageDimensions.width}×{pageDimensions.height} мм)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -255,11 +313,16 @@ const Index = () => {
                   <div className="max-w-2xl mx-auto">
                     {/* Mock Page */}
                     <div
-                      className="bg-white shadow-lg rounded-lg p-8 font-serif"
+                      className="bg-white shadow-lg rounded-lg p-8 font-serif mx-auto"
                       style={{
                         fontSize: `${fontSize[0]}px`,
                         lineHeight: lineHeight[0],
-                        margin: `${margins[0]}px`,
+                        padding: `${margins[0]}px`,
+                        width: `${pageDimensions.width * 0.8}px`,
+                        height: `${pageDimensions.height * 0.8}px`,
+                        aspectRatio: `${pageDimensions.width}/${pageDimensions.height}`,
+                        maxWidth: "100%",
+                        overflow: "hidden",
                       }}
                     >
                       <div className="space-y-4">
